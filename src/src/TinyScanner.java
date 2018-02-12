@@ -6,8 +6,11 @@ import java.util.Scanner;
 
 public class TinyScanner {
 
-
-    public Tokenizer nextToken() throws IOException {
+    /**
+     * Gets characters from input, matches them against regex patterns, returns the next token.
+     * @throws IOException
+     */
+    public void nextToken() throws IOException {
 
         Tokenizer tokenizer = new Tokenizer();
         //Logic ids
@@ -34,18 +37,13 @@ public class TinyScanner {
 
 
         System.out.println("Input: "+ input);
-        tokenizer.tokenize(input);
         try {
+            tokenizer.tokenize(input);
 
-            for (Tokenizer.Token tok : tokenizer.getTokens()) {
 
-                System.out.println("Token ID:" + tok.token + " Char or id:" + "(" + tok.sequence + ")");
-            }
         } catch (RuntimeException r) {
             System.out.println(r.getMessage());
         }
-
-        return tokenizer;
 
     }
 
