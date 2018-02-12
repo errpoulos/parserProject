@@ -50,8 +50,7 @@ public class Tokenizer {
      * @param token The pattern's ID number.
      */
     public void add(String regex, int token) {
-        tokenDetails.add(
-                new TokenDetails(Pattern.compile("^(" + regex + ")"), token));
+        tokenDetails.add(new TokenDetails(Pattern.compile("^(" + regex + ")"), token));
     }
 
     /**
@@ -76,7 +75,7 @@ public class Tokenizer {
                 }
             }
            ;
-            if (!match) throw new RuntimeException("Invalid Character(s) found:\n"+s+"\nremove from input before running again");
+            if (!match) throw new RuntimeException("Invalid Character(s) found:\n"+s.charAt(0)+"\nremove from input before running again");
         }
     }
 

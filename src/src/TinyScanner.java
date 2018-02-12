@@ -32,12 +32,14 @@ public class TinyScanner {
         //Regex //A matches beginning of input
         String input = new Scanner(new File("testFiles/testLeximes.txt")).useDelimiter("\\A").next();
 
-        System.out.println("Input: "+ input);
 
+        System.out.println("Input: "+ input);
+        tokenizer.tokenize(input);
         try {
-            tokenizer.tokenize(input);
-            for (Tokenizer.Token token : tokenizer.getTokens()) {
-                System.out.println("Token ID:" + token.token + " Char or id:" + "(" + token.sequence + ")");
+
+            for (Tokenizer.Token tok : tokenizer.getTokens()) {
+
+                System.out.println("Token ID:" + tok.token + " Char or id:" + "(" + tok.sequence + ")");
             }
         } catch (RuntimeException r) {
             System.out.println(r.getMessage());

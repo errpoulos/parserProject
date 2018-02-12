@@ -8,7 +8,6 @@ public class Main {
 
         TinyScanner tinyScanner =  new TinyScanner();
         tinyScanner.nextToken();
-
     }
 }
 
