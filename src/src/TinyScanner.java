@@ -1,5 +1,4 @@
 package src;
-
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +11,7 @@ public class TinyScanner {
 
         /**
          * Information about Tokens
+         *
          * @param regex The pattern used to match input string for a token.
          * @param token ID number given to each token group.
          */
@@ -44,6 +44,7 @@ public class TinyScanner {
 
     /**
      * Adds a regex pattern to validate a token from the input.
+     *
      * @param regex The pattern to be matched.
      * @param token The pattern's ID number.
      */
@@ -53,12 +54,12 @@ public class TinyScanner {
 
     /**
      * Tokenizes a String.
+     *
      * @param str String to be tokenized.
      */
     public void nextToken(String str) {
         String s = str.trim();
         tokens.clear();
-
         while (!s.equals("")) {
             boolean match = false;
             for (TokenDetails details : tokenDetails) {
@@ -72,8 +73,11 @@ public class TinyScanner {
                     break;
                 }
             }
-            if (!match)
-                throw new RuntimeException("Invalid Character(s) found:\n" + s.charAt(0) + "\nremove from input before running again");
+            for (int n = 0; n < s.length(); n++) {
+                if (!match) {
+                    throw new RuntimeException("Invalid Character(s) found:\n" + s.charAt(n) + "\nremove from input before running again");
+                }
+            }
         }
     }
     public LinkedList<Token> getTokens() {

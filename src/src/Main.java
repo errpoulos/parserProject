@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) throws IOException {
-
         TinyScanner tinyScanner = new TinyScanner();
         tinyScanner.add("read|write|begin|end(wh|if)|then|if|else|while", 1);
         //Left Paren
