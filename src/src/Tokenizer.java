@@ -7,15 +7,15 @@ import java.util.regex.Pattern;
 public class Tokenizer {
 
     private class TokenDetails {
-        public final Pattern regex;
-        public final int token;
+        final Pattern regex;
+        final int token;
 
         /**
          * Information about Tokens
          * @param regex The pattern used to match input string for a token.
          * @param token ID number given to each token group.
          */
-        public TokenDetails(Pattern regex, int token) {
+        TokenDetails(Pattern regex, int token) {
             super();
             this.regex = regex;
             this.token = token;
@@ -27,7 +27,7 @@ public class Tokenizer {
         public final int token;
         public final String sequence;
 
-        public Token(int token, String sequence) {
+        Token(int token, String sequence) {
             super();
             this.token = token;
             this.sequence = sequence;
@@ -39,7 +39,7 @@ public class Tokenizer {
     private LinkedList<TokenDetails> tokenDetails;
     private LinkedList<Token> tokens;
 
-    public Tokenizer() {
+    Tokenizer() {
         tokenDetails = new LinkedList<>();
         tokens = new LinkedList<>();
     }
@@ -74,7 +74,6 @@ public class Tokenizer {
                     break;
                 }
             }
-           ;
             if (!match) throw new RuntimeException("Invalid Character(s) found:\n"+s.charAt(0)+"\nremove from input before running again");
         }
     }
