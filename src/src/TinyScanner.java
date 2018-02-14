@@ -73,6 +73,9 @@ public class TinyScanner {
                     break;
                 }
             }
+            //uncomment this to see the program iterate through the input
+//            System.out.println(s);
+
             for (int n = 0; n < s.length(); n++) {
                 if (!match) {
                     throw new RuntimeException("Invalid Character(s) found:\n" + s.charAt(n) + "\nremove from input before running again");
