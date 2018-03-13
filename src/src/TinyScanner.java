@@ -1,93 +1,175 @@
 package src;
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class TinyScanner {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    private class TokenDetails {
-        final Pattern regex;
-        final int token;
+class TinyScanner {
+    private final String input;
+    private final List<Token> tokens = new ArrayList<>();
+    private int start = 0;
+    private int current = 0;
+    private int line = 1;
 
-        /**
-         * Information about Tokens
-         *
-         * @param regex The pattern used to match input string for a token.
-         * @param token ID number given to each token group.
-         */
-        TokenDetails(Pattern regex, int token) {
-            super();
-            this.regex = regex;
-            this.token = token;
+    TinyScanner(String input) {
+        this.input = input;
+    }
+
+    List<Token> nextToken() throws IOException {
+        while (!isAtEnd()) {
+            // We are at the beginning of the next lexeme.
+            start = current;
+            scanToken();
+
         }
-    }
 
-    public class Token {
-        public final int token;
-        public final String sequence;
+        tokens.add(new Token(TokenType.EOF, "", line));
+        System.out.println(tokens);
 
-        Token(int token, String sequence) {
-            super();
-            this.token = token;
-            this.sequence = sequence;
-        }
-    }
-
-    // Linked list of details about each input token
-    private LinkedList<TokenDetails> tokenDetails;
-    private LinkedList<Token> tokens;
-
-    TinyScanner() {
-        tokenDetails = new LinkedList<>();
-        tokens = new LinkedList<>();
-    }
-
-    /**
-     * Adds a regex pattern to validate a token from the input.
-     *
-     * @param regex The pattern to be matched.
-     * @param token The pattern's ID number.
-     */
-    public void add(String regex, int token) {
-        tokenDetails.add(new TokenDetails(Pattern.compile("^(" + regex + ")"), token));
-    }
-
-    /**
-     * Tokenizes a String.
-     *
-     * @param str String to be tokenized.
-     */
-    public void nextToken(String str) {
-        String s = str.trim();
-        tokens.clear();
-        while (!s.equals("")) {
-            boolean match = false;
-            for (TokenDetails details : tokenDetails) {
-                Matcher m = details.regex.matcher(s);
-                if (m.find()) {
-                    match = true;
-                    String tok = m.group().trim();
-                    tokens.add(new Token(details.token, tok));
-                    s = m.replaceFirst("").trim();
-                    tokens.add(new Token(details.token, tok));
-                    break;
-                }
-            }
-            //uncomment this to see the program iterate through the input
-//            System.out.println(s);
-
-            for (int n = 0; n < s.length(); n++) {
-                if (!match) {
-                    throw new RuntimeException("Invalid Character(s) found:\n" + s.charAt(n) + "\nremove from input before running again");
-                }
-            }
-        }
-    }
-    public LinkedList<Token> getTokens() {
         return tokens;
-    }
-}
 
+    }
+
+    private boolean isAtEnd() {
+        return current >= input.length();
+    }
+
+    private void scanToken() throws IOException {
+        char c = advance();
+        switch (c) {
+            case '(':
+                addToken(TokenType.LPAREN);
+                break;
+            case ')':
+                addToken(TokenType.RPAPREN);
+                break;
+            case '-':
+                addToken(TokenType.MINUS);
+                break;
+            case '+':
+                addToken(TokenType.PLUS);
+                break;
+            case ';':
+                addToken(TokenType.SEMICOLON);
+                break;
+            case '*':
+                addToken(TokenType.ASTERISK);
+                break;
+            case '/':
+                addToken(TokenType.SLASH);
+                break;
+            case ':':
+                addToken(match('=') ? TokenType.ASSIGN : TokenType.ASSIGN);
+                break;
+            case ' ':
+            case '\r':
+            case '\t':
+                break;
+            case '\n':
+                line++;
+                break;
+            default:
+                if (isDigit(c)) {
+                    number();
+                } else if (isAlpha(c)) {
+                    identifier();
+                } else {
+                    throw new IOException("Unexpected character.");
+                }
+                break;
+        }
+    }
+
+    private char advance() {
+        current++;
+        return input.charAt(current - 1);
+    }
+
+
+    private void addToken(TokenType type) {
+        addToken(type, null);
+    }
+
+    private void addToken(TokenType type, Object literal) {
+        String text = input.substring(start, current);
+        tokens.add(new Token(type, text, line));
+    }
+
+    private boolean match(char expected) {
+        if (isAtEnd()) return false;
+        if (input.charAt(current) != expected) return false;
+        current++;
+        return true;
+    }
+
+    private char peek() {
+        if (isAtEnd()) return '\0';
+        return input.charAt(current);
+    }
+
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    private boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') ||
+                (c >= 'A' && c <= 'Z') ||
+                c == '_';
+    }
+
+    private boolean isAlphaNumeric(char c) {
+        return isAlpha(c) || isDigit(c);
+    }
+
+    private void identifier() {
+        while (isAlphaNumeric(peek())) advance();
+        String text = input.substring(start, current);
+
+        TokenType type = keywords.get(text);
+        if (type == null) type = TokenType.ID;
+        addToken(type);
+
+    }
+
+    private void number() {
+        while (isDigit(peek())) advance();
+
+        // Look for a fractional part.
+        if (peek() == '.' && isDigit(peekNext())) {
+            // Consume the "."
+            advance();
+
+            while (isDigit(peek())) advance();
+        }
+
+        addToken(TokenType.NUMBER,
+                Double.parseDouble(input.substring(start, current)));
+    }
+
+    private char peekNext() {
+        if (current + 1 >= input.length()) return '\0';
+        return input.charAt(current + 1);
+    }
+
+    private static final Map<String, TokenType> keywords;
+
+    static {
+        keywords = new HashMap<>();
+        keywords.put("read", TokenType.READ);
+        keywords.put("write", TokenType.WRITE);
+        keywords.put("begin", TokenType.BEGIN);
+        keywords.put("end", TokenType.END);
+        keywords.put("if", TokenType.IF);
+        keywords.put("then", TokenType.THEN);
+        keywords.put("else", TokenType.ELSE);
+        keywords.put("endif", TokenType.ENDIF);
+        keywords.put("while", TokenType.WHILE);
+        keywords.put("endwh", TokenType.ENDIF);
+    }
+
+}
 
 
 

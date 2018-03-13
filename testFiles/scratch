@@ -1,0 +1,117 @@
+ private Expr expression() {
+        return assignment();
+
+    }
+
+
+    private Expr assignment() {
+        Expr expr = assignment();
+
+        while (match(ASSIGN)) {
+            Token operator = prev();
+            Expr right = assignment();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr addOp() {
+        Expr expr = multOp();
+        while (match(PLUS, MINUS)) {
+            Token operator = prev();
+            Expr right = multOp();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr multOp() {
+        Expr expr = multOp();
+        while (match(SLASH, ASTERISK)) {
+            Token operator = prev();
+            Expr right = multOp();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr factor() {
+        if (match(NUMBER, STRING)) {
+            return new Expr.Literal(prev().literal);
+        }
+        if (match(LPAREN)) {
+            Expr expr = expression();
+            consume(RAPREN, "Expected ')' after expr");
+            return new Expr.Grouping(expr);
+        }
+        return expression();
+
+    }
+
+    private boolean match(TokenType... types) {
+        for (TokenType type : types) {
+            if (check(type)) {
+                advance();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Token consume(TokenType type, String message) throws ParseError {
+        if (check(type)) {
+            return advance();
+        }
+
+        throw new ParseError();
+    }
+
+//    private ParseError error(Token token, String message) {
+//        TestFakeLanguage.error(token, message);
+//        return new ParseError();
+//    }
+
+
+    private boolean check(TokenType tokenType) {
+        if (isAtEnd()) return false;
+        return peek().type == tokenType;
+    }
+
+    private Token advance() {
+        if (!isAtEnd()) current++;
+        return prev();
+    }
+
+    private boolean isAtEnd() {
+        return peek().type == TokenType.EOF;
+    }
+
+    private Token peek() {
+        return tokens.get(current);
+    }
+
+    private Token prev() {
+        return tokens.get(current - 1);
+    }
+
+
+    private void sync() {
+        advance();
+        while (!isAtEnd()) {
+            if (prev().type == SEMICOLON) return;
+            switch ((peek().type)) {
+                case IF:
+                case ELSE:
+                case THEN:
+                case ENDIF:
+                case ENDWH:
+                case END:
+                case WHILE:
+                case READ:
+                case WRITE:
+                    return;
+            }
+            advance();
+        }
+    }
