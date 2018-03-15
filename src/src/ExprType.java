@@ -1,0 +1,5 @@
+package src;
+
+public enum ExprType {
+    PROGRAM, STMTLIST, STMT, EXPR, TERMTAIL, TERM, FACTORTAIL, FACTOR, ADDOP, MULTOP
+}

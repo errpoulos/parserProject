@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static src.TokenType.*;
+
 class TinyScanner {
     private final String input;
     private final List<Token> tokens = new ArrayList<>();
@@ -19,14 +21,12 @@ class TinyScanner {
 
     List<Token> nextToken() throws IOException {
         while (!isAtEnd()) {
-            // We are at the beginning of the next lexeme.
             start = current;
             scanToken();
 
         }
 
-        tokens.add(new Token(TokenType.EOF, "", line));
-        System.out.println(tokens);
+        tokens.add(new Token(EOF, "", line));
 
         return tokens;
 
@@ -40,28 +40,30 @@ class TinyScanner {
         char c = advance();
         switch (c) {
             case '(':
-                addToken(TokenType.LPAREN);
+                addToken(LPAREN);
                 break;
             case ')':
-                addToken(TokenType.RPAPREN);
+                addToken(RPAPREN);
                 break;
             case '-':
-                addToken(TokenType.MINUS);
+                addToken(MINUS);
                 break;
             case '+':
-                addToken(TokenType.PLUS);
+                addToken(PLUS);
                 break;
             case ';':
-                addToken(TokenType.SEMICOLON);
+                addToken(SEMICOLON);
                 break;
             case '*':
-                addToken(TokenType.ASTERISK);
+                addToken(ASTERISK);
                 break;
             case '/':
-                addToken(TokenType.SLASH);
+                addToken(SLASH);
                 break;
+            case '\u0000':
+                addToken(EPS);
             case ':':
-                addToken(match('=') ? TokenType.ASSIGN : TokenType.ASSIGN);
+                addToken(match('=') ? ASSIGN : ASSIGN);
                 break;
             case ' ':
             case '\r':
@@ -128,7 +130,7 @@ class TinyScanner {
         String text = input.substring(start, current);
 
         TokenType type = keywords.get(text);
-        if (type == null) type = TokenType.ID;
+        if (type == null) type = ID;
         addToken(type);
 
     }
@@ -144,7 +146,7 @@ class TinyScanner {
             while (isDigit(peek())) advance();
         }
 
-        addToken(TokenType.NUMBER,
+        addToken(NUMBER,
                 Double.parseDouble(input.substring(start, current)));
     }
 
@@ -157,16 +159,16 @@ class TinyScanner {
 
     static {
         keywords = new HashMap<>();
-        keywords.put("read", TokenType.READ);
-        keywords.put("write", TokenType.WRITE);
-        keywords.put("begin", TokenType.BEGIN);
-        keywords.put("end", TokenType.END);
-        keywords.put("if", TokenType.IF);
-        keywords.put("then", TokenType.THEN);
-        keywords.put("else", TokenType.ELSE);
-        keywords.put("endif", TokenType.ENDIF);
-        keywords.put("while", TokenType.WHILE);
-        keywords.put("endwh", TokenType.ENDIF);
+        keywords.put("read", READ);
+        keywords.put("write", WRITE);
+        keywords.put("begin", BEGIN);
+        keywords.put("end", END);
+        keywords.put("if", IF);
+        keywords.put("then", THEN);
+        keywords.put("else", ELSE);
+        keywords.put("endif", ENDIF);
+        keywords.put("while", WHILE);
+        keywords.put("endwh", ENDIF);
     }
 
 }

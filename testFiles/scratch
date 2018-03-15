@@ -115,3 +115,19 @@
             advance();
         }
     }
+
+
+program	→	begin stmt_list end
+stmt_list	→	stmt stmt_list | ε
+stmt	→	id := expr ;
+|	read id ;
+|	write expr ;
+|	if ( expr ) then stmt_list else stmt_list endif
+|	while ( expr ) stmt_list endwh
+expr	→	term term_tail
+term_tail	→	add_op term term_tail | ε
+term	→	factor factor_tail
+factor_tail	→	mult_op factor factor_tail | ε
+factor	→	( expr ) | id | number
+add_op	→	+ | -
+mult_op	→	* | /
