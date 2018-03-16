@@ -1,7 +1,6 @@
 package src;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static src.TokenType.*;
@@ -11,10 +10,7 @@ public class TinyParser {
 
     private TinyScanner tinyScanner;
     private List<Token> tokens;
-    private List<Expr> expressions = new ArrayList<>();
-    Token lookahead;
     private int current = 0;
-    private int start = 0;
 
 
     public TinyParser(TinyScanner tinyScanner, List<Token> tokens) {
@@ -34,7 +30,6 @@ public class TinyParser {
             if (match(BEGIN, ID, READ, WRITE, EOF, IF, WHILE)) {
                 stmt_list();
                 System.out.println(tokens);
-
             } else {
                 throw new ParseException("expected: token of type: BEGIN, ID, READ, WRITE, EOF, IF, WHILE");
 
@@ -183,13 +178,6 @@ public class TinyParser {
 
     private Token prev() {
         return tokens.get(current - 1);
-    }
-
-
-    private void addExpr(ExprType type) {
-        expressions = expressions.subList(start, current);
-        expressions.add(new Expr() {
-        });
     }
 
 }
